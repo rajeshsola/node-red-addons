@@ -1,0 +1,72 @@
+<!--
+  Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Prepared based on Sample html file that corresponds to the 99-sample.js file -->
+
+<script type="text/x-red" data-template-name="canconfig">
+    <div class="form-row">
+        <label for="node-config-input-channel"><i class="fa fa-random"></i> Channel</label>
+	<input type="text" id="node-config-input-channel" placeholder="channel">
+	<!-- <a id="node-config-lookup-channel" class="btn"><i id="node-config-lookup-channel-icon" class="fa fa-search"></i></a> -->
+    </div>
+    <div class="form-row">
+    	<label for="node-config-input-bitrate"><i class="fa fa-random"></i> Bitrate</label>
+	<select type="text" id="node-config-input-bitrate">
+		<option value="10000">10000</option>
+		<option value="20000">20000</option>
+		<option value="50000">50000</option>
+		<option value="100000">100000</option>
+		<option value="125000">125000</option>
+		<option value="250000">250000</option>
+		<option value="500000">500000</option>
+		<option value="800000">800000</option>
+		<option value="1000000">1000000</option>
+	</select>
+</script>
+<script type="text/javascript">
+    RED.nodes.registerType('canconfig',{
+        category: 'config',
+        defaults: {
+		channel: {value:"vcan0",required:true},
+		bitrate: {value:"100000"}
+        },
+        label: function() {
+            return this.channel||"channel";
+	},
+	/*oneditprepare: function() {
+    		try {
+        		$("#node-config-input-channel").autocomplete( "destroy" );
+	        } catch(err) {
+     		}
+	$("#node-config-lookup-channel").click(function() {
+		//$("#node-config-lookup-channel").addClass('disabled');
+		//$("#node-config-lookup-channel").removeClass('disabled');
+		$("#node-config-lookup-channel").addClass('disabled');
+		$.getJSON('canchannels',function(data) {
+			$("#node-config-lookup-channel").removeClass('disabled');
+			});
+			$("#node-config-input-channel").autocomplete({
+			source:data,
+			minLength:0,
+			close: function( event, ui ) {
+				$("#node-config-inputi-channel").autocomplete( "destroy" );
+		        }
+		}).autocomplete("search","");
+	     });
+	});
+	}*/
+    });
+</script>
+

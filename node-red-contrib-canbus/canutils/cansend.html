@@ -1,0 +1,67 @@
+<!--
+  Copyright (C) 2015 - Rajesh Sola <rajeshsola@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Prepared based on Sample html file,99-sample.html.demo
+     that corresponds to the 99-sample.js file-->
+
+<script type="text/x-red" data-template-name="cansend">
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-tasks"></i>Config</label>
+        <input type="text" id="node-input-config" placeholder="Config">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-canid"><i class="fa fa-tasks"></i> Can ID</label>
+        <input type="text" id="node-input-canid" placeholder="CanId">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-data"><i class="fa fa-tasks"></i> Data</label>
+        <input type="text" id="node-input-data" placeholder="Data">
+    </div> 
+    <br/>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="cansend">
+   <p>Simple node to send a can frame with specified channel and id,data will be
+   taken as input in the form of msg.payload ,like from inject node</p>
+   <p>If msg.payload is not in the form of canid#data, default can id as
+   specified in node configuration will be chosen and complete msg.payload 
+   will be considered as data</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('cansend',{
+	category: 'can bus',      // the palette category
+	color: '#a6bbcf',
+        defaults: {             // defines the editable properties of the node
+	    config: {type:"canconfig",required:true},
+	    canid: {value:"128"},
+	    data :{value:""}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:0,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "myicon.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"cansend";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.channel?"node_label_italic":"";
+        }
+    });
+</script>
