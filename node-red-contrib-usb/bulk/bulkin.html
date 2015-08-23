@@ -1,0 +1,120 @@
+<!--
+Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Prepared based on Sample html file,99-sample.html.demo 
+     that corresponds to the 99-sample.js file-->
+
+<script type="text/x-red" data-template-name="usbbulkin">
+    <div class="form-row">
+        <label for="node-input-devid"><i class="fa fa-tasks"></i> Device Id</label>
+	<input type="text" id="node-input-devid" style="width:50%;" placeholder="DeviceId">
+	<a id="node-input-lookup-device" class="btn"><i id="node-input-lookup-device-icon" class="fa fa-search"></i>lookup</a> 
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-iface"><i class="fa fa-tasks"></i>Interface</label>
+	<input type="text" id="node-input-iface" style="width:50%;" placeholder="Interface">
+	<!--	<a id="node-input-lookup-iface" class="btn"><i id="node-input-lookup-iface-icon" class="fa fa-search"></i>lookup</a> -->
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-epin"><i class="fa fa-tasks"></i>Endpoint</label>
+	<input type="text" id="node-input-epin" style="width:50%;" placeholder="Endpoint">
+<!--	<a id="node-input-lookup-epin" class="btn"><i id="node-input-lookup-epin-icon" class="fa fa-search"></i>lookup</a> -->
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+<!-- TODO:lookup interface, endpoint is in process,passing device id is in pending -->
+<script type="text/x-red" data-help-name="usbbulkin">
+   <p>Simple node to capture the data received by an USB interface configured 
+   in bulk/vendor specific class </p>
+   <p> Data capturing starts on sending any dummy input </p>
+   <p>Outputs an object called <b>msg</b> containing <b>msg.payload</b>. 
+      msg.payload is a byte buffer representing data arriving thru bulk-in
+      endpoint of chosen interface.</p>
+</script>
+<!-- TODO: classify input for various actions like start,stop etc. -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('usbbulkin',{
+	category: 'usb',      // the palette category
+	color: '#a6bbcf',
+        defaults: {             // defines the editable properties of the node
+            name: {value:"usbbulkin"},   //  along with default values.
+	    devid: {value:"0000:0000", required:true},
+	    iface: { value:"0",required:true},
+	    epin: { value:"0",required:true}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        icon: "myicon.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||this.devid||"bulk-in";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+	oneditprepare: function() {
+                try {
+			$("#node-input-devid").autocomplete( "destroy" );
+			$("#node-input-iface").autocomplete( "destroy" );
+			$("#node-input-epin").autocomplete( "destroy" );
+                } catch(err) { }
+                $("#node-input-lookup-device").click(function() {
+                     $("#node-input-lookup-device").addClass('disabled');
+                     $.getJSON('bindevices',function(devstrlist) {
+                     $("#node-input-lookup-device").removeClass('disabled');
+                     $("#node-input-devid").autocomplete({
+                             source:devstrlist,
+                             minLength:0,
+                             close: function( event, ui ) {
+                                $("#node-input-deviceid").autocomplete( "destroy" );
+                             }  
+                     }).autocomplete("search","");
+	     	   });
+	  	});
+          	$("#node-input-lookup-iface").click(function() {
+                     $("#node-input-lookup-iface").addClass('disabled');
+                     $.getJSON('ifacelist',function(ifstrlist) {
+                     $("#node-input-lookup-iface").removeClass('disabled');
+                     $("#node-input-iface").autocomplete({
+                             source:ifstrlist,
+                             minLength:0,
+                             close: function( event, ui ) {
+                                $("#node-input-iface").autocomplete( "destroy" );
+                             }  
+                     }).autocomplete("search","");
+		     });
+		     });
+          	$("#node-input-lookup-epin").click(function() {
+                     $("#node-input-lookup-epin").addClass('disabled');
+                     $.getJSON('epinlist',function(epstrlist) {
+                     $("#node-input-lookup-epin").removeClass('disabled');
+                     $("#node-input-epin").autocomplete({
+                             source:epstrlist,
+                             minLength:0,
+                             close: function( event, ui ) {
+                                $("#node-input-epin").autocomplete( "destroy" );
+                             }  
+                     }).autocomplete("search","");
+		     });
+		     });
+       }
+});
+</script>

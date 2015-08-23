@@ -1,0 +1,56 @@
+<!--
+  Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Prepared based on Sample html file,99-sample.html.demo 
+     that corresponds to the 99-sample.js file-->
+
+<script type="text/x-red" data-template-name="usbscan">
+    <div class="form-row">
+        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="usbscan">
+   <p>Simple node to scan usb devices on receiving any input</p>
+   <p>Outputs an object called <b>msg</b> for each detected device 
+   containing <b>msg.bus</b>, <b>msg.vid</b> and <b>msg.pid</b>. 
+   msg.payload is a String in the form of vid:pid.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('usbscan',{
+	category: 'usb',      // the palette category
+	color: '#a6bbcf',
+        defaults: {             // defines the editable properties of the node
+            name: {value:"usbscan"},   //  along with default values.
+            topic: {value:"usb", required:true}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        icon: "myicon.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||this.topic||"usbscan";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

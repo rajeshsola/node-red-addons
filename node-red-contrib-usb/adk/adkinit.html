@@ -1,0 +1,97 @@
+<!--
+  Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- Prepared based on Sample html file,99-sample.html.demo 
+     that corresponds to the 99-sample.js file-->
+
+<script type="text/x-red" data-template-name="adkinit">
+   <div class="form-row">
+        <label for="node-input-devid"><i class="fa fa-tasks"></i> Device Id</label>
+	<input type="text" id="node-input-devid" placeholder="Device Id">
+	<a id="node-input-lookup-devid" class="btn"><i id="node-input-lookup-devid-icon" class="fa fa-search"></i>lookup</a>  
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-manufacturer"><i class="fa fa-tasks"></i> Manufacturer</label>
+        <input type="text" id="node-input-manufacturer" placeholder="Manufacturer">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-model"><i class="fa fa-tasks"></i> Model</label>
+        <input type="text" id="node-input-model" placeholder="Model">
+    </div>
+    <br/>
+    <div class="form-row">
+        <label for="node-input-version"><i class="fa fa-tasks"></i> ADK Version</label>
+        <input type="text" id="node-input-version" placeholder="Version">
+    </div>
+    <br/>
+    <!-- By convention, most nodes have a 'name' property. The following div -->
+    <!-- provides the necessary field. Should always be the last option      -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="adkinit">
+   <p>Simple node to initialize attached android device into AOA mode</p>
+   <p> Node need to be configured with right identity strings before 
+       giving input </p>
+   <p>Outputs an object called <b>msg</b> containing msg.vid, msg.pid and
+   <b>msg.payload</b>. msg.payload is a String in the form of vid:pid </p>
+   <!-- output is dummy as of now -->
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('adkinit',{
+	category: 'usb',      // the palette category
+	color: '#a6bbcf',
+        defaults: {             // defines the editable properties of the node
+            name: {value:"adkinit"},   //  along with default values.
+	    devid : {value:"22b8:2e83"},
+	    manufacturer :{value:"Google, Inc."},
+	    model:{value:"DemoKit"},
+	    version:{value:"1.0"}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        icon: "myicon.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+		return "adkinit";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+        	try {
+			$("#node-input-devid").autocomplete( "destroy" );
+	        } catch(err) { }
+		$("#node-input-lookup-devid").click(function() {
+		$("#node-input-lookup-devid").addClass('disabled');
+                $.getJSON('aoadevices',function(devstrlist) {
+	                $("#node-input-lookup-devid").removeClass('disabled');
+                     	$("#node-input-devid").autocomplete({
+                             source:devstrlist,
+                             minLength:0,
+                             close: function( event, ui ) {
+                                $("#node-input-devid").autocomplete( "destroy" );
+                             }  
+                     }).autocomplete("search","");
+                   });
+		});
+	}
+});
+</script>

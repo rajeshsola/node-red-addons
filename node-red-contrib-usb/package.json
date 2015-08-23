@@ -1,0 +1,32 @@
+{
+    "name"         : "node-red-contrib-usb",
+    "version"      : "0.0.1",
+    "description"  : "A set of node-red nodes used as usb utilities",
+    "dependencies": {
+        "usb": "1.0.6"
+    },
+    "author": {
+	"name": "Rajesh Sola",
+	"email": "rajeshsola@gmail.com"
+    },
+    "license": "Apache-2.0",
+    "repository": {
+	"type": "git",
+	"url": "git+https://github.com/rajeshsola/node-red-addons/node-red-contrib-usb"
+    },
+    "homepage": "https://github.com/rajeshsola/node-red-addons/wiki",
+    "keywords": [ 
+	"node-red",
+	"usb",
+	"adk"
+    ],
+    "node-red"     : {
+        "nodes": {
+	    "usbscan": "utils/usbscan.js",
+            "usbenum": "utils/usbenum.js",
+	    "bulkin" : "bulk/bulkin.js",
+	    "bulkout": "bulk/bulkout.js",
+	    "adkinit": "adk/adkinit.js"
+        }
+    }
+}
