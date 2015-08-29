@@ -29,13 +29,13 @@ module.exports = function(RED) {
 
 	this.vid=this.devid.split(":")[0];
 	this.pid=this.devid.split(":")[1];
-	node.warn("bulk::devid="+msg.devid+",vid="+this.vid+",pid="+this.pid+
+	node.warn("bulk::devid="+this.devid+",vid="+this.vid+",pid="+this.pid+
 			",iface="+this.iface+",epin="+this.epin);
 	var mydevice=myusb.findByIds(parseInt(this.vid,16),parseInt(this.pid,16));
 	mydevice.open();
-	var myinterface=mydevice.interface(parseInt(this.iface));
+	var myinterface=mydevice.interface(parseInt(this.iface,16));
 	myinterface.claim();
-	var myendpoint=myinterface.endpoint(parseInt(this.epin));
+	var myendpoint=myinterface.endpoint(parseInt(this.epin,16));
 	//myendpoint.transferType=2;
 	//myendpoint.startStream(1,64);
 	/*myendpoint.transfer(64,function(error,data) {
@@ -49,20 +49,18 @@ module.exports = function(RED) {
 		node.send(msg);
 	});
 	this.on('input',function(data) {
-		myendpoint.startPoll(10,4);
-		//console.log("bulk--enpoint="+myendpoint.descriptor.bEndpointAddress.toString(16));
-		/*var str=new String(data);
-		if(str.equals("start"))
+		var str=new String(msg.payload);
+		if(str.indexOf("start")!=-1)
 		{
 			myendpoint.startPoll(10,4);
 			node.warn("poll started");
 		}
 		else
 		{
-			myendpoint.stopPoll(function(){
-			});
+			//myendpoint.stopPoll(function(){
+			//});
 			node.warn("poll stopped");
-		}*/
+		}
 	});
         this.on("close", function() {
             // eg: mydevice.close, release interface etc.
