@@ -12,8 +12,11 @@ Current Status:-
 
 How to Enable Virtual CAN Channel:-
 	modprobe vcan
+
 	ip link add dev vcan0 type vcan
+
 	ip link set up vcan0 
+
 	#you can refer https://github.com/linux-can/can-utils/ 
 	
 
