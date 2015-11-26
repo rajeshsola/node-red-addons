@@ -28,13 +28,14 @@ module.exports = function(RED) {
 		this.channel="vcan0";
         var node = this;
 
-	node.warn("channel="+n.channel);
+	node.warn("channel="+this.channel);
 	var channel = can.createRawChannel(""+this.channel, true);
 	channel.start();
 	var canmsg={};
 	channel.addListener("onMessage",function(frame) {
 		//canmsg.channel=frame.channel;
-		canmsg.canid=frame.id;
+		canmsg.id=frame.id;
+		canmsg.dlc=frame.data.length;
 		canmsg.data=frame.data;
 		canmsg.payload=frame.id+"#"+frame.data;
 		node.send(canmsg);

@@ -40,8 +40,9 @@
    <p>Simple node to send a can frame with specified channel and id,data will be
    taken as input in the form of msg.payload ,like from inject node</p>
    <p>If msg.payload is not in the form of canid#data, default can id as
-   specified in node configuration will be chosen and complete msg.payload 
-   will be considered as data</p>
+   specified in node configuration will be chosen or random value if configuration 
+   value is zero or blank and complete msg.payload will be considered as data,
+   if msg.payload is also null then random id,data will be generated</p>
 </script>
 
 <script type="text/javascript">

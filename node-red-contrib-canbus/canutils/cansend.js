@@ -18,6 +18,7 @@
 module.exports = function(RED) {
     "use strict";
     var can = require('socketcan');
+    var random = require('random-js')();
     function CanSendNode(n) {
         RED.nodes.createNode(this,n);
 
@@ -36,25 +37,39 @@ module.exports = function(RED) {
 	channel.start();
 
         // respond to inputs....
+	var frame={};
         this.on('input', function (msg) {
 		node.warn("Sending a can frame: "+msg.payload);
-		msg.channel=this.channel;
-		if(msg.payload.indexOf("#")==-1)
+		frame.channel=this.channel;
+		frame.canid=0;
+		frame.dlc=0;
+		if(msg.payload.indexOf("#")!=-1)
 		{
-			msg.canid=parseInt(this.canid);
-			msg.data=new Buffer(msg.payload);
+			frame.canid=parseInt(msg.payload.split("#")[0]);
+			frame.data=new Buffer(msg.payload.split("#")[1]);
+			frame.dlc=frame.data.length;
 		}
 		else
 		{
-			msg.canid=parseInt(msg.payload.split("#")[0]);
-			msg.data=new Buffer(msg.payload.split("#")[1]);
+			frame.canid=parseInt(this.canid);
+			frame.dlc=msg.payload.length;
+			frame.data=new Buffer(msg.payload);			
 		}
-		//node.warn(msg);
-		channel.send({ id: msg.canid,
+		if(isNaN(frame.canid) || frame.canid==0)
+			frame.canid=random.integer(1,4095);
+		/*if(!frame.data || frame.dlc==0)
+		{
+			msg.dlc=random(1,7);
+			msg.data=new Buffer(msd.dlc);
+			for(var i=0;i<msg.dlc;i++)
+				msg.data[i]=random.integer(0,255);
+		}*/
+		channel.send({ id: frame.canid,
 			ext: false,
-			data:msg.data });
+			data:frame.data });
 	});
 	//TODO:support for extended frames, other cansend options
+	//TODO:generating random dlc,data if msg.payload is null
         this.on("close", function() {
 	    channel.stop();
         });

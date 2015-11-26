@@ -34,8 +34,8 @@
 
 <script type="text/x-red" data-help-name="candump">
    <p>Simple node to listen for can frames on specified channels.</p>
-   <p>Outputs an object called <b>msg</b> containing <b>msg.channel</b> and
-   <b>msg.payload</b>. msg.payload is a String.</p>
+   <p>Outputs an object called <b>msg</b> containing <b>msg.channel</b>,<b>msg.data</b> and
+   <b>msg.payload</b> in the form of canid#data.</p>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
