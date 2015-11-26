@@ -11,6 +11,7 @@ Current Status:-
   in between as these are managed from input of additional function nodes
 
 How to Enable Virtual CAN Channel:-
+
 	modprobe vcan
 
 	ip link add dev vcan0 type vcan
