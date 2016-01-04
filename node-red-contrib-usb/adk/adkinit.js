@@ -29,42 +29,45 @@ module.exports = function(RED) {
         var node = this;
 
 	var mydevice=myusb.findByIds(parseInt(this.vid,16),parseInt(this.pid,16));
-        this.on('input', function (msg) {
-	    	/*var msg={},myinterface,myendpoint;
-		msg.bus=mydevice.busNumber;
-		mydevice.open();
-		for(var i=0;i<msg.numInterfaces;i++) {
-			myinterface=mydevice.interfaces[i];
-			node.warn("interface index:"+i+",class="+myinterface.descriptor.bInterfaceClass+",subclass="+myinterface.descriptor.bInterfaceSubClass);
-			for(var j=0;j<myinterface.descriptor.bNumEndpoints;j++)
-			{
-				myendpoint=myinterface.endpoints[j];
-				node.warn("endpoint-"+ myendpoint.direction + "::"+myendpoint.descriptor.bEndpointAddress.toString(16)+",type="+myendpoint.transferType);
-			}
-		}*/
-		var callback=function(error,data) {
-			 if(!error)
-	                         console.log(data);
-			 else
-				 console.log(error);
-                };
-		var manufacturer=new Buffer(n.manufacturer.toString());
-		var model=new Buffer(n.model.toString());
-		var adkver=new Buffer(n.version.toString());
-		var buf=new Buffer("0");
-		mydevice.controlTransfer(0xC0,51,0,0,2,callback);
-		mydevice.controlTransfer(0x40,52,0,0,manufacturer,callback);
-		mydevice.controlTransfer(0x40,52,0,1,model,callback);
-		mydevice.controlTransfer(0x40,52,0,3,adkver,callback);
-		mydevice.controlTransfer(0x40,53,0,0,buf,callback); //delay issue
-		msg.payload=""+msg.vid+":"+msg.pid;
-	    	this.send(msg);
-        });
-	//TODO:initialize android device in various modes with combinations
-	//of AOA, AUDIO, HID based on input string
-        this.on("close", function() {
-		//TODO, eg:- mydevice.close();
-        });
+	if(mydevice)
+	{
+	        this.on('input', function (msg) {
+		    	/*var msg={},myinterface,myendpoint;
+			msg.bus=mydevice.busNumber;
+			mydevice.open();
+			for(var i=0;i<msg.numInterfaces;i++) {
+				myinterface=mydevice.interfaces[i];
+				node.warn("interface index:"+i+",class="+myinterface.descriptor.bInterfaceClass+",subclass="+myinterface.descriptor.bInterfaceSubClass);
+				for(var j=0;j<myinterface.descriptor.bNumEndpoints;j++)
+				{
+					myendpoint=myinterface.endpoints[j];
+					node.warn("endpoint-"+ myendpoint.direction + "::"+myendpoint.descriptor.bEndpointAddress.toString(16)+",type="+myendpoint.transferType);
+				}
+			}*/
+			var callback=function(error,data) {
+				if(!error)
+					node.info(data);
+				 else
+					node.error(error);
+                	};
+			var manufacturer=new Buffer(n.manufacturer.toString());
+			var model=new Buffer(n.model.toString());
+			var adkver=new Buffer(n.version.toString());
+			var buf=new Buffer("0");
+			mydevice.controlTransfer(0xC0,51,0,0,2,callback);
+			mydevice.controlTransfer(0x40,52,0,0,manufacturer,callback);
+			mydevice.controlTransfer(0x40,52,0,1,model,callback);'
+			mydevice.controlTransfer(0x40,52,0,3,adkver,callback);
+			mydevice.controlTransfer(0x40,53,0,0,buf,callback); //delay issue
+			msg.payload=""+msg.vid+":"+msg.pid;
+		    	this.send(msg);
+	        });
+		//TODO:initialize android device in various modes with combinations
+		//of AOA, AUDIO, HID based on input string
+	        this.on("close", function() {
+			//TODO, eg:- mydevice.close();
+		});
+	}
     }
     RED.nodes.registerType("adkinit",ADKInitNode);
     RED.httpAdmin.get("/aoadevices", RED.auth.needsPermission('usb.read'), function(req,res){

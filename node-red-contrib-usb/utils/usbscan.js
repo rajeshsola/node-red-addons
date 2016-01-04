@@ -38,12 +38,32 @@ module.exports = function(RED) {
 		msg.bus=device.busNumber;
 		msg.dev=device.deviceAddress;
 		msg.vid=device.deviceDescriptor.idVendor.toString(16);
-		msg.pid=device.deviceDescriptor.idVendor.toString(16);
+		msg.pid=device.deviceDescriptor.idProduct.toString(16);
 		//TODO: device string
 		msg.payload=""+msg.vid+":"+msg.pid;
 	    	this.send(msg);
 	    }
         });
+	myusb.on('attach',function(hdevice) {
+		 var msg={};
+		 msg.vid=hdevice.deviceDescriptor.idVendor.toString(16);
+                 msg.pid=hdevice.deviceDescriptor.idProduct.toString(16);
+		 msg.payload="usb device "+msg.vid+":"+msg.pid+" got attached";
+		 node.send(msg);
+		 //node.send("Device attached,devid::"+hdev.deviceDescriptor.idVendor.toString(16)+":"+
+		 //				+hdev.deviceDescriptor.idProduct.toString(16));
+	});
+	myusb.on('detach',function(hdevice) {
+		 var msg={};
+		 msg.vid=hdevice.deviceDescriptor.idVendor.toString(16);
+                 msg.pid=hdevice.deviceDescriptor.idProduct.toString(16);
+ 		 msg.payload="usb device "+msg.vid+":"+msg.pid+" got detached";
+		 node.send(msg);
+
+		//node.send("Device detached,devid::"+hdev.deviceDescriptor.idVendor.toString(16)+":"+
+		//                                 +hdev.deviceDescriptor.idProduct.toString(16));
+
+	});
         this.on("close", function() {
             // eg: node.client.disconnect();
         });

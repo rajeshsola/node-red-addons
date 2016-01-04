@@ -24,6 +24,7 @@ module.exports = function(RED) {
         this.devid = n.devid;
 	this.iface = n.iface;
 	this.epin  = n.epin;
+	this.packetlen=n.packetlen;
 
         var node = this;
 
@@ -32,67 +33,89 @@ module.exports = function(RED) {
 	node.warn("bulk::devid="+this.devid+",vid="+this.vid+",pid="+this.pid+
 			",iface="+this.iface+",epin="+this.epin);
 	var mydevice=myusb.findByIds(parseInt(this.vid,16),parseInt(this.pid,16));
-	mydevice.open();
-	var myinterface=mydevice.interface(parseInt(this.iface,16));
-	myinterface.claim();
-	var myendpoint=myinterface.endpoint(parseInt(this.epin,16));
-	//myendpoint.transferType=2;
-	//myendpoint.startStream(1,64);
-	/*myendpoint.transfer(64,function(error,data) {
+	if(mydevice)
+	{
+		mydevice.open();
+		var myinterface=mydevice.interface(parseInt(this.iface,16));
+		if(myinterface)
+		{
+		  myinterface.claim();	//handle error LIBUSB_ERROR_BUSY
+		  var myendpoint=myinterface.endpoint(parseInt(this.epin,16));
+		  if(myendpoint)
+		  {
+			//myendpoint.transferType=2;
+			//myendpoint.startStream(1,64);
+			/*myendpoint.transfer(64,function(error,data) {
 			if(!error)
 				console.log(data);
 			else
 				console.log(error);
-	});*/
-	myendpoint.on('data',function(buffer) {
-		msg.payload=buffer;
-		node.send(msg);
-	});
-	this.on('input',function(data) {
-		var str=new String(msg.payload);
-		if(str.indexOf("start")!=-1)
-		{
-			myendpoint.startPoll(10,4);
-			node.warn("poll started");
-		}
+			});*/
+		  	myendpoint.on('data',function(buffer) {
+		 	msg.payload=buffer;
+			node.send(msg);
+		  });
+		  this.on('input',function(data) {
+			var str=new String(msg.payload);
+			if(str=="start")
+			{
+				myendpoint.startPoll(10,this.packetlen);
+				node.warn("poll started");
+			}
+			else if(str=="stop")
+			{
+				myendpoint.stopPoll(function(){
+					node.warn("poll stop callback");
+				});
+				node.warn("poll stopped");
+			}
+		  });
+	          this.on("close", function() {
+	            // eg: mydevice.close, release interface etc.
+		  myinterface.release(function(err){
+			    if(err)
+			    	node.warn("release errors:"+err);
+			    node.warn("releasing interace");
+	    	  });
+		  mydevice.close();
+        	  });
+    		}	
 		else
-		{
-			//myendpoint.stopPoll(function(){
-			//});
-			node.warn("poll stopped");
-		}
-	});
-        this.on("close", function() {
-            // eg: mydevice.close, release interface etc.
-        });
-    }
-    RED.nodes.registerType("usbbulkin",UsbBulkInNode);
-    RED.httpAdmin.get("/bindevices", RED.auth.needsPermission('usb.read'),function(req,res){
-	var mydevices=myusb.getDeviceList();
-	var devstrlist=[];
-	for(var i=0;i<mydevices.length;i++)
-	{
-		devstrlist.push(mydevices[i].deviceDescriptor.idVendor.toString(16)+":"+
-			mydevices[i].deviceDescriptor.idProduct.toString(16));
+			node.error("endpoint not found :"+this.epin);
+	       }
+	       else
+		      node.error("interface not found :"+this.iface);
 	}
-	res.json(devstrlist);
-    });
-    RED.httpAdmin.get("/ifacelist", RED.auth.needsPermission('usb.read'), function(req,res){
-	var mydevice=myusb.findByIds(parseInt("0000",16),parseInt("0000",16)); //TODO
-	mydevice.open();
-	var mylist=mydevice.interfaces;
-	var ifstrlist=[];
-	for(var i=0;i<mylist.length;i++)
-		ifstrlist.push(mylist[i].descriptor.bInterfaceNumber.toString(10));
-	res.json(ifstrlist);
-    });
-    RED.httpAdmin.get("/epinlist", RED.auth.needsPermission('usb.read'), function(req,res){
-	var mydevice=myusb.findByIds(parseInt("0000",16),parseInt("0000",16)); //TODO
-	mydevice.open();
-	var epstrlist=[];
-	var myinterface=mydevice.interfaces[0];
-	for(var i=0;i<myinterface.descriptor.bNumEndpoints;i++)
-	  epstrlist.push(myinterface.endpoints[i].descriptor.bEndpointAddress.toString(16));
-	res.json(epstrlist);
-    });
+	else
+		node.error("device not found ::"+this.vid+":"+this.pid);
+    	}
+	RED.nodes.registerType("usbbulkin",UsbBulkInNode);
+	RED.httpAdmin.get("/bindevices", RED.auth.needsPermission('usb.read'),function(req,res){
+		var mydevices=myusb.getDeviceList();
+		var devstrlist=[];
+		for(var i=0;i<mydevices.length;i++)
+		{
+			devstrlist.push(mydevices[i].deviceDescriptor.idVendor.toString(16)+":"+
+			mydevices[i].deviceDescriptor.idProduct.toString(16));
+		}
+		res.json(devstrlist);
+    	});
+	RED.httpAdmin.get("/ifacelist", RED.auth.needsPermission('usb.read'), function(req,res){
+		var mydevice=myusb.findByIds(parseInt("0000",16),parseInt("0000",16)); //TODO
+		mydevice.open();
+		var mylist=mydevice.interfaces;
+		var ifstrlist=[];
+		for(var i=0;i<mylist.length;i++)
+			ifstrlist.push(mylist[i].descriptor.bInterfaceNumber.toString(10));
+		res.json(ifstrlist);
+	});
+	RED.httpAdmin.get("/epinlist", RED.auth.needsPermission('usb.read'), function(req,res){
+		var mydevice=myusb.findByIds(parseInt("0000",16),parseInt("0000",16)); //TODO
+		mydevice.open();
+		var epstrlist=[];
+		var myinterface=mydevice.interfaces[0];
+		for(var i=0;i<myinterface.descriptor.bNumEndpoints;i++)
+			  epstrlist.push(myinterface.endpoints[i].descriptor.bEndpointAddress.toString(16));
+		res.json(epstrlist);
+	});
 }

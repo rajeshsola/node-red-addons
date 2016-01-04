@@ -26,38 +26,41 @@ module.exports = function(RED) {
 	this.devid = n.devid;
 	this.vid=this.devid.split(":")[0];
 	this.pid=this.devid.split(":")[1];
-
         var node = this;
 
 	var mydevice=myusb.findByIds(parseInt(this.vid,16),parseInt(this.pid,16));
-	mydevice.open();
-
-        this.on('input', function (msg) {
-	    	var msg={},myinterface,myendpoint;
-		msg.bus=mydevice.busNumber;
-		msg.vid=mydevice.deviceDescriptor.idVendor.toString(16);
-		msg.pid=mydevice.deviceDescriptor.idProduct.toString(16);
-		msg.manufacturer=mydevice.deviceDescriptor.iManufacturer;
-		msg.product=mydevice.deviceDescriptor.iProduct;
-		msg.serial=mydevice.deviceDescriptor.iSerialNumber;
-		msg.numInterfaces=mydevice.configDescriptor.bNumInterfaces;
-		for(var i=0;i<msg.numInterfaces;i++) {
-			myinterface=mydevice.interfaces[i];
-			node.warn("interface index:"+i+",class="+myinterface.descriptor.bInterfaceClass+",subclass="+myinterface.descriptor.bInterfaceSubClass);
-			for(var j=0;j<myinterface.descriptor.bNumEndpoints;j++)
-			{
-				myendpoint=myinterface.endpoints[j];
-				node.warn("endpoint-"+ myendpoint.direction + "::"+myendpoint.descriptor.bEndpointAddress.toString(16)+",type="+myendpoint.transferType);
+	if(mydevice)
+	{
+		mydevice.open();	
+        	this.on('input', function (msg) {
+	    		var msg={},myinterface,myendpoint;
+			msg.bus=mydevice.busNumber;
+			msg.vid=mydevice.deviceDescriptor.idVendor.toString(16);
+			msg.pid=mydevice.deviceDescriptor.idProduct.toString(16);
+			msg.manufacturer=mydevice.deviceDescriptor.iManufacturer;
+			msg.product=mydevice.deviceDescriptor.iProduct;
+			msg.serial=mydevice.deviceDescriptor.iSerialNumber;
+			msg.numInterfaces=mydevice.configDescriptor.bNumInterfaces;
+			for(var i=0;i<msg.numInterfaces;i++) {
+				myinterface=mydevice.interfaces[i];
+				node.warn("interface index:"+i+",class="+myinterface.descriptor.bInterfaceClass+",subclass="+myinterface.descriptor.bInterfaceSubClass);
+				for(var j=0;j<myinterface.descriptor.bNumEndpoints;j++)
+				{
+					myendpoint=myinterface.endpoints[j];
+					node.warn("endpoint-"+ myendpoint.direction + "::"+myendpoint.descriptor.bEndpointAddress.toString(16)+",type="+myendpoint.transferType);
+				}
 			}
-		}
-		msg.payload=""+msg.vid+":"+msg.pid;
-	    	this.send(msg);
-        });
-	//TODO:put more enumerated details on interfaces,endpoints as part of
-	//msg properties
-        this.on("close", function() {
-            //mydevice.close();
-        });
+			msg.payload=""+msg.vid+":"+msg.pid;
+		    	this.send(msg);
+        	});
+		//TODO:put more enumerated details on interfaces,endpoints as part of
+		//msg properties
+	        this.on("close", function() {
+        	    mydevice.close();
+	        });
+	}
+	else
+		node.error("device not found ::"+this.vid+":"+this.pid);
     }
     RED.nodes.registerType("usbenum",UsbEnumNode);
     RED.httpAdmin.get("/usbdevices", RED.auth.needsPermission('usb.read'), function(req,res){

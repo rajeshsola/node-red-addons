@@ -36,6 +36,11 @@ Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
     </div>
     <br/>
     <div class="form-row">
+        <label for="node-input-packetlen"><i class="fa fa-tasks"></i>Packet Length</label>
+	<input type="text" id="node-input-packetlen" style="width:50%;" placeholder="Packet Length">
+    </div>
+    <br/>
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -59,7 +64,8 @@ Copyright (C) 2015 - Rajesh Sola<rajeshsola@gmail.com>
             name: {value:"usbbulkin"},   //  along with default values.
 	    devid: {value:"0000:0000", required:true},
 	    iface: { value:"0",required:true},
-	    epin: { value:"0",required:true}
+	    epin: { value:"0",required:true},
+	    packetlen: {value:"10"}
         },
         inputs:1,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n
