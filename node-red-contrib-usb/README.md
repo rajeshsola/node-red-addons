@@ -5,6 +5,8 @@ This addon provides set of simple nodes for following USB functionality
 - usbenum to enumerate a specific device with given device id
 - adkinit to initialize android phone in AOA mode
 - bulkin,bulkout for bulk transfer(under testing,reference code is kept in repository,but skipped in package.son)
+
+
 TODO:-
 - Well tested bulkin,bulout nodes
 - Add more output to usbscan,usbenum
