@@ -29,20 +29,28 @@ module.exports = function(RED) {
         var node = this;
 
 	node.warn("channel="+this.channel);
-	var channel = can.createRawChannel(""+this.channel, true);
-	channel.start();
-	var canmsg={};
-	channel.addListener("onMessage",function(frame) {
-		//canmsg.channel=frame.channel;
-		canmsg.id=frame.id;
-		canmsg.dlc=frame.data.length;
-		canmsg.data=frame.data;
-		canmsg.payload=frame.id+"#"+frame.data;
-		node.send(canmsg);
-	});
-        this.on("close", function() {
-	    channel.stop();
-        });
+	var channel;
+	try {
+		channel = can.createRawChannel(""+this.channel, true);
+	}catch(ex) { 
+		node.error("channel not found:"+this.channel);		
+	}
+	if(channel) 
+	{
+		channel.start();
+		var canmsg={};
+		channel.addListener("onMessage",function(frame) {
+			//canmsg.channel=frame.channel;
+			canmsg.canid=frame.id;
+			canmsg.dlc=frame.data.length;
+			canmsg.data=frame.data;
+			canmsg.payload=frame.id+"#"+frame.data;
+			node.send(canmsg);
+		});
+	        this.on("close", function() {
+		    channel.stop();
+	        });	
+	}
     }
     RED.nodes.registerType("candump",CanDumpNode);
 }

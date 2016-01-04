@@ -28,8 +28,8 @@
     </div>
     <br/>
     <div class="form-row">
-        <label for="node-input-data"><i class="fa fa-tasks"></i> Data</label>
-        <input type="text" id="node-input-data" placeholder="Data">
+        <label for="node-input-payload"><i class="fa fa-tasks"></i> Data</label>
+        <input type="text" id="node-input-payload" placeholder="Data">
     </div> 
     <br/>
 </script>
@@ -39,10 +39,14 @@
 <script type="text/x-red" data-help-name="cansend">
    <p>Simple node to send a can frame with specified channel and id,data will be
    taken as input in the form of msg.payload ,like from inject node</p>
-   <p>If msg.payload is not in the form of canid#data, default can id as
-   specified in node configuration will be chosen or random value if configuration 
-   value is zero or blank and complete msg.payload will be considered as data,
-   if msg.payload is also null then random id,data will be generated</p>
+   <p>This node considers input as per following priority sequence <br/>
+   1.msg.canid, msg.payload are valid <br/>
+   2.msg.payload is in the form of canid#data <br/>
+   3.In absence of msg.canid or msg.payload 
+   4.In absence of canid,data in incoming message or node configuration
+   random canid, random data will be generated.<br/>
+   Please make sure msg.payload is not in the form of id#data when msg.canid is valid
+   </p>
 </script>
 
 <script type="text/javascript">
@@ -52,7 +56,7 @@
         defaults: {             // defines the editable properties of the node
 	    config: {type:"canconfig",required:true},
 	    canid: {value:"128"},
-	    data :{value:""}
+	    payload : {value:""}
         },
         inputs:1,               // set the number of inputs - only 0 or 1
         outputs:0,              // set the number of outputs - 0 to n
