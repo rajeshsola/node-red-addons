@@ -3,7 +3,8 @@
     "version"      : "0.0.1",
     "description"  : "A set of node-red nodes used as usb utilities",
     "dependencies": {
-        "usb": "1.0.6"
+        "usb": "1.0.6",
+	"node-red-node-notify": ">=0.0.2"
     },
     "author": {
 	"name": "Rajesh Sola",
@@ -24,8 +25,6 @@
         "nodes": {
 	    "usbscan": "utils/usbscan.js",
             "usbenum": "utils/usbenum.js",
-	    "bulkin" : "bulk/bulkin.js",
-	    "bulkout": "bulk/bulkout.js",
 	    "adkinit": "adk/adkinit.js"
         }
     }
