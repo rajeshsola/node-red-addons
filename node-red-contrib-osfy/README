@@ -1,0 +1,8 @@
+This is an example code to demonstrate writing custom addons for NodeRED
+As per the steps covered in the article published in 
+Open Source For You Magazine(EFY Group),June 2017.
+
+Let's not publish this node to npm as it is meant for learning purpose
+in view of contributinf Node-RED addons.It is suggested to build new
+addons based on this example and publish to npm repository.
+
