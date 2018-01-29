@@ -43,6 +43,7 @@ module.exports = function(RED) {
 			//canmsg.channel=frame.channel;
 			canmsg.canid=frame.id;
 			canmsg.dlc=frame.data.length;
+			canmsg.rtr=frame.rtr;
 			canmsg.data=frame.data;
 			canmsg.payload=frame.id+"#"+frame.data;
 			node.send(canmsg);
