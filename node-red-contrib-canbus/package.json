@@ -6,7 +6,7 @@
   },
   "description": "A set of node-red nodes used for socketcan utilities",
   "dependencies": {
-    "socketcan": "2.1.x",
+    "socketcan": "2.4.x",
     "random-js": "1.0.x"
   },
   "author": {
